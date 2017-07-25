@@ -77,7 +77,7 @@ public class ConsumerMultThread extends Thread {
 		props.put("zookeeper.connect", property.getValue("zookeeper.connect", "190.15.116.189:24002,190.15.116.196:24002,190.15.116.190:24002/kafka"));
 
 		// 本Consumer的组id，从consumer.properties中获取
-		props.put("group.id", property.getValue("group.id", "example-group1"));
+		props.put("group.id", property.getValue("group.id", "consumergroup"));
 
 		// ZooKeeper的session超时时间，从server.properties中获取
 		props.put("zookeeper.session.timeout.ms", property.getValue("zookeeper.session.timeout.ms", "15000"));
