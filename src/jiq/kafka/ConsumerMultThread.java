@@ -14,10 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package jq.kafka;
+package jiq.kafka;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -27,8 +26,8 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jq.util.LoginUtil;
-import jq.util.PropertyUtil;
+import jiq.util.LoginUtil;
+import jiq.util.PropertyUtil;
 import kafka.consumer.ConsumerConfig;
 import kafka.consumer.ConsumerIterator;
 import kafka.consumer.KafkaStream;
@@ -51,7 +50,7 @@ public class ConsumerMultThread extends Thread {
 	private static final String USER_PRINCIPAL = "jiq";
 
 	// 并发的线程数
-	private static int CONCURRENCY_THREAD_NUM = 2;
+	private static int CONCURRENCY_THREAD_NUM = 3;
 
 	private ConsumerConnector consumer;
 
@@ -69,25 +68,25 @@ public class ConsumerMultThread extends Thread {
 	 * @return [ConsumerConfig]
 	 */
 	private static ConsumerConfig createConsumerConfig() {
-		PropertyUtil kafkaPros = PropertyUtil.getInstance();
+		PropertyUtil property = PropertyUtil.getInstance();
 		LOG.info("ConsumerConfig: entry.");
 
 		Properties props = new Properties();
 
 		// ZooKeeper的地址，从server.properties中获取
-		props.put("zookeeper.connect", kafkaPros.getValue("zookeeper.connect", "localhost:2181"));
+		props.put("zookeeper.connect", property.getValue("zookeeper.connect", "190.15.116.189:24002,190.15.116.196:24002,190.15.116.190:24002/kafka"));
 
 		// 本Consumer的组id，从consumer.properties中获取
-		props.put("group.id", kafkaPros.getValue("group.id", "example-group1"));
+		props.put("group.id", property.getValue("group.id", "example-group1"));
 
 		// ZooKeeper的session超时时间，从server.properties中获取
-		props.put("zookeeper.session.timeout.ms", kafkaPros.getValue("zookeeper.session.timeout.ms", "15000"));
+		props.put("zookeeper.session.timeout.ms", property.getValue("zookeeper.session.timeout.ms", "15000"));
 
 		// zookeeper.sync.time.ms，从server.properties中获取
-		props.put("zookeeper.sync.time.ms", kafkaPros.getValue("zookeeper.sync.time.ms", "2000"));
+		props.put("zookeeper.sync.time.ms", property.getValue("zookeeper.sync.time.ms", "2000"));
 
 		// Consumer客户端提交offset的默认时间，从consumer.properties中获取
-		props.put("auto.commit.interval.ms", kafkaPros.getValue("auto.commit.interval.ms", "10000"));
+		props.put("auto.commit.interval.ms", property.getValue("auto.commit.interval.ms", "10000"));
 
 		// 当zookeeper中没有本Consumer组的offset或者offset超出合法范围后，应从何处开始消费数据。
 		// "smallest"——从头开始消费; "largest"——从当前位置开始消费; 其他值——在Consumer客户端抛异常。
@@ -140,15 +139,6 @@ public class ConsumerMultThread extends Thread {
 		LoginUtil.setJaasFile(USER_PRINCIPAL, userKeyTableFile);
 	}
 
-	/*
-	 * 判断文件是否存在
-	 */
-	private static boolean isFileExists(String fileName) {
-		File file = new File(fileName);
-
-		return file.exists();
-	}
-
 	public static void main(String[] args) {
 		// 安全模式下启用
 		try {
@@ -163,8 +153,7 @@ public class ConsumerMultThread extends Thread {
 		LOG.info("Security prepare success.");
 
 		// 启动消费线程，其中KafkaProperties.topic为待消费的topic名称
-		String topic = PropertyUtil.getInstance().getValue("topic", "hadoop");
-		ConsumerMultThread consumerThread = new ConsumerMultThread(topic);
+		ConsumerMultThread consumerThread = new ConsumerMultThread("topic");
 		consumerThread.start();
 	}
 

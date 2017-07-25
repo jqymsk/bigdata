@@ -1,4 +1,4 @@
-package jq.util;
+package jiq.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,10 +20,10 @@ public class PropertyUtil {
 		try {
 			String userDir = System.getProperty("user.dir") + File.separator + "conf" + File.separator;
 
-			File proFile = new File(userDir + "hadoop.properties");
+			File proFile = new File(userDir + "system.properties");
 
 			if (proFile.exists()) {
-				props.load(new FileInputStream(userDir + "hadoop.properties"));
+				props.load(new FileInputStream(userDir + "system.properties"));
 			}
 		} catch (IOException e) {
 			LOG.info("The IOException occured {}.", e);

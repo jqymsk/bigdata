@@ -1,4 +1,4 @@
-package jq.kafka;
+package jiq.kafka;
 
 import kafka.producer.Partitioner;
 import kafka.utils.*;

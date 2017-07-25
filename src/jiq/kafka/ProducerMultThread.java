@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package jq.kafka;
+package jiq.kafka;
 
 import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jq.util.PropertyUtil;
+import jiq.util.PropertyUtil;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
 
@@ -54,7 +54,7 @@ public class ProducerMultThread extends Thread {
 	}
 
 	public static void main(String[] args) {
-		String topic = PropertyUtil.getInstance().getValue("topic", "kafkatopic");
+		String topic = PropertyUtil.getInstance().getValue("topic", "topic");
 		ProducerMultThread producerMultThread = new ProducerMultThread(topic);
 		producerMultThread.start();
 	}
@@ -82,7 +82,7 @@ public class ProducerMultThread extends Thread {
 			this.sendTopic = topicName;
 
 			// 指定Partition发送
-			props.put("partitioner.class", "jq.kafka.SimplePartitioner");
+			props.put("partitioner.class", "jiq.kafka.SimplePartitioner");
 
 			// 序列化类
 			props.put("serializer.class", "kafka.serializer.StringEncoder");

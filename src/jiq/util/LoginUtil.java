@@ -1,4 +1,4 @@
-package jq.util;
+package jiq.util;
 
 import java.io.File;
 import java.io.FileWriter;
