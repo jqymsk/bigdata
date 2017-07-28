@@ -11,6 +11,17 @@ import kafka.javaapi.consumer.SimpleConsumer;
 
 public class KafkaUtil {
 
+	/**
+	 * 获取topic分区数
+	 * 
+	 * @param host
+	 * @param port
+	 * @param soTimeout
+	 * @param bufferSize
+	 * @param clientId
+	 * @param topic
+	 * @return
+	 */
 	public static int getPartitionNum(String host, int port, int soTimeout, int bufferSize, String clientId,
 			String topic) {
 		SimpleConsumer simpleConsumer = new SimpleConsumer(host, port, soTimeout, bufferSize, clientId);
