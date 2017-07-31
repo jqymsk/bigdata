@@ -1,24 +1,11 @@
-/**
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- * 
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package jiq.kafka;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -110,6 +97,13 @@ public class Producer implements Runnable {
 		private Boolean isAsync;
 		private int sendThreadId = 0;
 
+		Random random = new Random();
+
+		String[] names = { "kafka1", "kafka2", "kafka3", "kafka4", "kafka5", "kafka6", "kafka7", "kafka8", "kafka9",
+				"kafka10", "kafka11", "kafka12", "kafka13", "kafka14", "kafka15", "kafka16", "kafka17", "kafka18",
+				"kafka19", "kafka20", "kafka21", "kafka22", "kafka23", "kafka24", "kafka25", "kafka26", "kafka27" };
+		Map<String, String> map = new HashMap<String, String>();
+
 		/**
 		 * 生产者线程类构造方法
 		 * 
@@ -138,42 +132,53 @@ public class Producer implements Runnable {
 			this.sendThreadId = threadNum;
 			this.topic = topicName;
 			this.isAsync = asyncEnable;
+
+			for (int i = 0; i < names.length / 2; i++) {
+				map.put(names[i], "male");
+			}
+
+			for (int i = names.length / 3; i < names.length; i++) {
+				map.put(names[i], "female");
+			}
 		}
 
 		public void run() {
 			LOG.info("Producer: start.");
 
-			// 用于记录消息条数
-			int messageNo = 1;
+			for (int m = 0; m < Integer.MAX_VALUE / 2; m++) {
+				for (int i = 0; i < 10000; i++) {
 
-			// 每个线程发送的消息条数
-			int messagesPerThread = 50;
-			while (messageNo <= messagesPerThread) {
-				// 指定该record发到哪个partition中
-				int partition = sendThreadId;
-				// 时间戳
-				long startTime = System.currentTimeMillis();
-				int key = sendThreadId;
-				// 待发送的消息内容
-				String messageStr = new String("Message_" + sendThreadId + "_" + messageNo);
+					String name = names[(i + 314) % names.length];
+					String sexy = map.get(name);
+					String time = String.valueOf(Math.abs(random.nextInt(3)));
+					// 待发送的消息内容
+					String messageStr = new String(name + "," + sexy + "," + time);
 
-				// 构造消息记录
-				ProducerRecord<Integer, String> record = new ProducerRecord<Integer, String>(topic, partition,
-						startTime, key, messageStr);
+					// 时间戳
+					long startTime = System.currentTimeMillis();
 
-				if (isAsync) { // 异步发送
-					producer.send(record, new DemoCallBack(startTime, sendThreadId, messageStr));
-				} else { // 同步发送
-					try {
-						producer.send(record).get();
-					} catch (InterruptedException | ExecutionException e) {
-						e.printStackTrace();
+					// 构造消息记录
+					ProducerRecord<Integer, String> record = new ProducerRecord<Integer, String>(topic, sendThreadId,
+							startTime, sendThreadId, messageStr);
+
+					if (isAsync) { // 异步发送
+						producer.send(record, new DemoCallBack(startTime, sendThreadId, messageStr));
+					} else { // 同步发送
+						try {
+							producer.send(record).get();
+						} catch (InterruptedException | ExecutionException e) {
+							e.printStackTrace();
+						}
 					}
-				}
 
-				LOG.info("Producer: send " + messageStr + " to " + topic + " partition " + partition + " with key: "
-						+ sendThreadId);
-				++messageNo;
+					LOG.info("Producer: send " + messageStr + " to " + topic + " partition " + sendThreadId
+							+ " with key: " + sendThreadId);
+				}
+				try {
+					Thread.sleep(30000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 
 			try {
