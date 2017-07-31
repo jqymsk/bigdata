@@ -11,11 +11,11 @@ import org.apache.spark.api.java.function.PairFunction;
 import scala.Tuple2;
 import scala.Tuple3;
 
-public class FemaleInfoCollection {
+public class SparkCore {
 
 	public static void main(String[] args) throws Exception {
 		// 创建一个配置类SparkConf，然后创建一个SparkContext
-		SparkConf conf = new SparkConf().setAppName("CollectFemaleInfo");
+		SparkConf conf = new SparkConf().setAppName("SparkCore");
 		JavaSparkContext jsc = new JavaSparkContext(conf);
 
 		// 读取原文件数据,每一行记录转成RDD里面的一个元素
